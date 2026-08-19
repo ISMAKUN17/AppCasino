@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spintec AI Pattern Engine - Ruleta Americana</title>
+  <title>Spintec AI Pattern Engine - Ruleta Americana (v2)</title>
   <style>
     :root {
       --bg-dark: #0b0f19;
@@ -58,11 +58,11 @@
       align-items: center;
     }
 
-    /* Grid de las 4 Predicciones */
+    /* Grid de las 5 Predicciones */
     .predictions {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
       margin: 15px 0;
     }
 
@@ -70,31 +70,32 @@
       background: #070a12;
       border: 2px solid var(--accent-gold);
       border-radius: 8px;
-      padding: 10px 4px;
+      padding: 8px 2px;
       text-align: center;
     }
 
     .pred-box .number {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 800;
       color: var(--accent-gold);
     }
 
     .pred-box .confidence {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--accent-cyan);
       font-weight: bold;
       margin-top: 2px;
     }
 
     .pred-box .reason {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: #94a3b8;
       margin-top: 4px;
-      height: 24px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
+      line-height: 1.1;
     }
 
     /* Teclado Táctil */
@@ -167,7 +168,7 @@
   <!-- Panel Principal -->
   <div class="card">
     <h2>
-      Top 4 Jugadas Sugeridas (IA Spintec)
+      Top 5 Jugadas Sugeridas (IA Spintec)
       <span style="font-size: 0.7rem; color: var(--accent-cyan);" id="data-count">Entradas: 0</span>
     </h2>
     
@@ -175,22 +176,27 @@
       <div class="pred-box">
         <div class="number" id="pred1">-</div>
         <div class="confidence" id="conf1">0%</div>
-        <div class="reason" id="reason1">Esperando tiradas</div>
+        <div class="reason" id="reason1">Sin datos</div>
       </div>
       <div class="pred-box">
         <div class="number" id="pred2">-</div>
         <div class="confidence" id="conf2">0%</div>
-        <div class="reason" id="reason2">Esperando tiradas</div>
+        <div class="reason" id="reason2">Sin datos</div>
       </div>
       <div class="pred-box">
         <div class="number" id="pred3">-</div>
         <div class="confidence" id="conf3">0%</div>
-        <div class="reason" id="reason3">Esperando tiradas</div>
+        <div class="reason" id="reason3">Sin datos</div>
       </div>
       <div class="pred-box">
         <div class="number" id="pred4">-</div>
         <div class="confidence" id="conf4">0%</div>
-        <div class="reason" id="reason4">Esperando tiradas</div>
+        <div class="reason" id="reason4">Sin datos</div>
+      </div>
+      <div class="pred-box">
+        <div class="number" id="pred5">-</div>
+        <div class="confidence" id="conf5">0%</div>
+        <div class="reason" id="reason5">Sin datos</div>
       </div>
     </div>
 
@@ -202,7 +208,7 @@
   <div class="card">
     <h2>Historial & Estado IA</h2>
     <div class="history-list" id="history"></div>
-    <div class="status-bar" id="status">Esperando primeros números para calibrar algoritmos de Markov...</div>
+    <div class="status-bar" id="status">Ingresa tiros para calibrar patrones...</div>
     <button class="btn-clear" onclick="limpiarHistorial()">Reiniciar Partida</button>
   </div>
 </div>
@@ -260,10 +266,10 @@
   function limpiarHistorial() {
     historial = [];
     actualizarHistorialUI();
-    for(let i = 1; i <= 4; i++) {
+    for(let i = 1; i <= 5; i++) {
       document.getElementById(`pred${i}`).innerText = '-';
       document.getElementById(`conf${i}`).innerText = '0%';
-      document.getElementById(`reason${i}`).innerText = 'Esperando tiradas';
+      document.getElementById(`reason${i}`).innerText = 'Sin datos';
     }
     document.getElementById('status').innerText = 'Partida reiniciada.';
   }
@@ -272,7 +278,7 @@
   function ejecutarMotorIA() {
     if (historial.length === 0) return;
 
-    let candidatos = {}; // Map para acumular pesos/puntuaciones de cada número
+    let candidatos = {};
 
     function sumarPuntos(num, puntos, motivo) {
       if (!candidatos[num]) {
@@ -287,71 +293,74 @@
     const len = historial.length;
     const ultimo = historial[len - 1];
 
-    // 1. ANÁLISIS DE MARKOV (Secuencias de 2 y 3 números)
+    // 1. MARKOV: Secuencias de 2 y 3 números
     if (len >= 2) {
       const prev = historial[len - 2];
-      // Buscar coincidencia de pares previos en la historia [prev, ultimo] -> ?
       for (let i = 0; i < len - 2; i++) {
         if (historial[i] === prev && historial[i + 1] === ultimo) {
-          let siguienteEfectivo = historial[i + 2];
-          sumarPuntos(siguienteEfectivo, 40, `Patrón de secuencia [${prev}, ${ultimo}]`);
+          let sig = historial[i + 2];
+          sumarPuntos(sig, 45, `Secuencia [${prev}, ${ultimo}]`);
         }
       }
     }
 
     if (len >= 1) {
-      // Buscar coincidencia simple de transición [ultimo] -> ?
       for (let i = 0; i < len - 1; i++) {
         if (historial[i] === ultimo) {
           let sig = historial[i + 1];
-          sumarPuntos(sig, 20, `Transición histórica tras el ${ultimo}`);
+          sumarPuntos(sig, 25, `Transición tras el ${ultimo}`);
         }
       }
     }
 
-    // 2. ARITMÉTICA Y MULTIPLICACIÓN (Reglas Spintec)
+    // 2. ARITMÉTICA Y MULTIPLICACIÓN
     if (ultimo !== "0" && ultimo !== "00") {
       let val = Number(ultimo);
-      if (val * 2 <= 36) sumarPuntos((val * 2).toString(), 15, `Doble de ${val}`);
-      if (val * 3 <= 36) sumarPuntos((val * 3).toString(), 15, `Triple de ${val}`);
-      if (val % 2 === 0) sumarPuntos((val / 2).toString(), 15, `Mitad de ${val}`);
+      if (val * 2 <= 36) sumarPuntos((val * 2).toString(), 20, `Doble de ${val}`);
+      if (val * 3 <= 36) sumarPuntos((val * 3).toString(), 20, `Triple de ${val}`);
+      if (val % 2 === 0) sumarPuntos((val / 2).toString(), 18, `Mitad de ${val}`);
     }
 
-    // Ceros opuestos (Especial Spintec Americana)
-    if (ultimo === "0") sumarPuntos("00", 25, "Respuesta a cero opuesto");
-    if (ultimo === "00") sumarPuntos("0", 25, "Respuesta a cero opuesto");
+    // Ceros opuestos
+    if (ultimo === "0") sumarPuntos("00", 30, "Cero opuesto");
+    if (ultimo === "00") sumarPuntos("0", 30, "Cero opuesto");
 
     // Espejo
     if (ultimo.length === 2 && ultimo !== "00") {
       let espejo = ultimo.split('').reverse().join('');
-      if (Number(espejo) <= 36) sumarPuntos(espejo, 12, `Inversión espejo de ${ultimo}`);
+      if (Number(espejo) <= 36) sumarPuntos(espejo, 15, `Espejo de ${ultimo}`);
     }
 
-    // 3. SECTOR FÍSICO Y VECINOS EN EL PLATO
+    // 3. SECTOR AMPLIADO (Vecinos a 1 y 2 casillas de distancia en el plato)
     let idx = ruedaAmericana.indexOf(ultimo);
     if (idx !== -1) {
-      let izq = ruedaAmericana[(idx - 1 + ruedaAmericana.length) % ruedaAmericana.length];
-      let der = ruedaAmericana[(idx + 1) % ruedaAmericana.length];
-      sumarPuntos(izq, 18, `Vecino plato (${ultimo})`);
-      sumarPuntos(der, 18, `Vecino plato (${ultimo})`);
+      let izq1 = ruedaAmericana[(idx - 1 + ruedaAmericana.length) % ruedaAmericana.length];
+      let der1 = ruedaAmericana[(idx + 1) % ruedaAmericana.length];
+      let izq2 = ruedaAmericana[(idx - 2 + ruedaAmericana.length) % ruedaAmericana.length];
+      let der2 = ruedaAmericana[(idx + 2) % ruedaAmericana.length];
+
+      sumarPuntos(izq1, 22, `Vecino directo (${ultimo})`);
+      sumarPuntos(der1, 22, `Vecino directo (${ultimo})`);
+      sumarPuntos(izq2, 14, `Sector cercano (${ultimo})`);
+      sumarPuntos(der2, 14, `Sector cercano (${ultimo})`);
     }
 
-    // 4. EVITAR EL ÚLTIMO NÚMERO (Salvo repetición extrema)
+    // Excluir el último tiro salvo que se haya repetido
     delete candidatos[ultimo];
 
-    // Ordenar candidatos por puntuación
+    // Ordenar resultados por puntuación
     let listaOrdenada = Object.keys(candidatos).map(key => ({
       num: key,
       peso: candidatos[key].peso,
-      motivo: candidatos[key].motivos.join(" + ")
+      motivo: candidatos[key].motivos[joinStr = " + "]
     })).sort((a, b) => b.peso - a.peso);
 
-    // Rellenar si faltan opciones
     const respaldo = [
-      {num: "0", motivo: "Protección 0"}, 
-      {num: "00", motivo: "Protección 00"}, 
+      {num: "0", motivo: "Cero neutro"}, 
+      {num: "00", motivo: "Cero neutro"}, 
       {num: "17", motivo: "Centro plato"}, 
-      {num: "23", motivo: "Frecuencia base"}
+      {num: "23", motivo: "Frecuencia base"},
+      {num: "5", motivo: "Frecuencia base"}
     ];
 
     let elegidos = [];
@@ -362,10 +371,10 @@
         setElegidos.add(item.num);
         elegidos.push(item);
       }
-      if (elegidos.length === 4) break;
+      if (elegidos.length === 5) break;
     }
 
-    while (elegidos.length < 4) {
+    while (elegidos.length < 5) {
       let r = respaldo.shift();
       if (!setElegidos.has(r.num) && r.num !== ultimo) {
         setElegidos.add(r.num);
@@ -373,17 +382,17 @@
       }
     }
 
-    // Renderizar las 4 mejores jugadas en interfaz
     let totalPeso = elegidos.reduce((acc, curr) => acc + curr.peso, 0);
 
-    for (let i = 0; i < 4; i++) {
-      let conf = Math.min(Math.round((elegidos[i].peso / (totalPeso || 1)) * 100) + 20, 95);
+    // Actualizar interfaz para las 5 casillas
+    for (let i = 0; i < 5; i++) {
+      let conf = Math.min(Math.round((elegidos[i].peso / (totalPeso || 1)) * 100) + 15, 95);
       document.getElementById(`pred${i+1}`).innerText = elegidos[i].num;
       document.getElementById(`conf${i+1}`).innerText = `${conf}% Conf.`;
       document.getElementById(`reason${i+1}`).innerText = elegidos[i].motivo;
     }
 
-    document.getElementById('status').innerText = `IA calibrada con ${len} tiradas. Secuencias de Markov activas.`;
+    document.getElementById('status').innerText = `IA analizando ${len} tiradas. Cobertura ampliada a 5 sectores.`;
   }
 
   initKeypad();
