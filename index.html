@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spintec AI Quantum Engine v5 - 2 Predicciones Ultra-Precisa</title>
+  <title>Spintec AI Quantum Engine v5 - 2 Predicciones con Acierto Dorado</title>
   <style>
     :root {
       --bg-dark: #080d1a;
@@ -83,7 +83,7 @@
       border-color: var(--accent-cyan);
     }
 
-    /* Grid de Solo 2 Predicciones Máximas */
+    /* Grid de EXACTAMENTE 2 Predicciones */
     .predictions-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -106,7 +106,7 @@
     }
 
     .pred-card .number {
-      font-size: 2.4rem;
+      font-size: 2.5rem;
       font-weight: 900;
       color: var(--accent-gold);
     }
@@ -133,7 +133,7 @@
       margin-top: 4px;
     }
 
-    /* Modificador Hotspot con x90 añadido */
+    /* Modificador Hotspot con x90 incluido */
     .hotspot-controls {
       display: flex;
       align-items: center;
@@ -190,7 +190,7 @@
     .key.black { background-color: var(--black-spintec); }
     .key.green { background-color: var(--green-spintec); }
 
-    /* Historial con resaltado en DORADO */
+    /* Historial */
     .history-list {
       display: flex;
       flex-wrap: wrap;
@@ -201,8 +201,8 @@
     }
 
     .badge {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -212,12 +212,12 @@
       box-sizing: border-box;
     }
 
-    /* ESTILO DORADO DE ACIERTO PREDECIDO */
+    /* ESTILO DORADO PARA ACIERTOS PREDECIDOS */
     .badge.hit-gold {
       background: linear-gradient(135deg, #f59e0b, #fbbf24, #d97706) !important;
       color: #000 !important;
       font-weight: 900;
-      border: 2px solid #fff;
+      border: 2px solid #ffffff;
       box-shadow: 0 0 10px #fbbf24, 0 0 15px #f59e0b;
       transform: scale(1.1);
     }
@@ -256,7 +256,7 @@
   <!-- Panel Principal -->
   <div class="card">
     <h2>
-      Top 2 Jugadas Máxima Precisión (Spintec v5)
+      Top 2 Jugadas Máxima Precisión
       <span style="font-size: 0.7rem; color: var(--accent-cyan);" id="data-count">Entradas: 0</span>
     </h2>
 
@@ -266,7 +266,7 @@
       <button class="btn-source" id="btn-virtual" onclick="setFuente('Virtual')">Ruleta Virtual (RNG)</button>
     </div>
 
-    <!-- Solo 2 Predicciones -->
+    <!-- Muestra ÚNICAMENTE 2 Predicciones -->
     <div class="predictions-grid">
       <div class="pred-card" id="card1">
         <div class="number" id="pred1">-</div>
@@ -280,7 +280,7 @@
       </div>
     </div>
 
-    <!-- Modificador de Hotspot con x90 añadido -->
+    <!-- Modificador de Hotspot -->
     <div class="hotspot-controls">
       <label>Hotspot:</label>
       <button class="hotspot-btn selected" onclick="setMult('x1')" id="m1">Normal</button>
@@ -299,10 +299,10 @@
   <div class="card">
     <h2>Frecuencias Calientes</h2>
     <div class="hot-list" id="hotNumbers">
-      <span style="font-size: 0.75rem; color: #64748b;">Analizando...</span>
+      <span style="font-size: 0.75rem; color: #64748b;">Sin datos...</span>
     </div>
 
-    <h2 style="margin-top: 15px;">Historial (Aciertos en Dorado)</h2>
+    <h2 style="margin-top: 15px;">Historial (Aciertos en Dorado ⭐)</h2>
     <div class="history-list" id="history"></div>
 
     <button class="btn-clear" onclick="limpiarHistorial()">Reiniciar Todo</button>
@@ -322,7 +322,7 @@
   let historial = [];
   let fuenteRuleta = "Física";
   let multiplicadorActual = "x1";
-  let ultimasPredicciones = [];
+  let ultimasPredicciones = []; // Guarda las 2 predicciones activas
 
   function initUI() {
     const keypad = document.getElementById('keypad');
@@ -357,7 +357,7 @@
   }
 
   function agregarNumero(num) {
-    // Comprobar si el número ingresado acertó una de las predicciones dadas
+    // Revisa si el nuevo número ingresado coincide con las predicciones
     let fueAcierto = ultimasPredicciones.includes(num);
 
     historial.push({ 
@@ -379,9 +379,10 @@
     [...historial].reverse().forEach(item => {
       const badge = document.createElement('div');
       
+      // SI FUE ACIERTO -> MARCA EN DORADO
       if (item.acierto) {
-        badge.className = `badge hit-gold`; // RESALTADO DORADO DE ACIERTO
-        badge.title = "¡Acierto de la IA!";
+        badge.className = `badge hit-gold`; 
+        badge.title = "¡Acierto correcto de la IA!";
       } else {
         badge.className = `badge ${getClaseColor(item.num)}`;
         if (item.mult !== 'x1') {
@@ -429,7 +430,7 @@
     }
   }
 
-  // MOTOR IA QUANTUM DE SÓLO 2 PREDICCIONES
+  // MOTOR IA - 2 PREDICCIONES MÁXIMA PRECISIÓN
   function ejecutarMotorIA() {
     if (historial.length === 0) return;
 
@@ -445,7 +446,7 @@
     const ultimoObj = historial[len - 1];
     const ultimo = ultimoObj.num;
 
-    // 1. CÁLCULO BIOMECÁNICO DEL SOPLADOR (Delta)
+    // 1. CÁLCULO DE FUERZA DEL SOPLADOR (Delta)
     let deltasFrecuentes = {};
     if (len >= 3) {
       for (let i = 1; i < len; i++) {
@@ -481,18 +482,18 @@
       }
     });
 
-    // 3. DISTRIBUCIÓN GAUSSIANA DEL SECTOR
+    // 3. DISTRIBUCIÓN DEL SECTOR DEL PLATO
     if (idxUltimo !== -1) {
       for (let offset = -4; offset <= 4; offset++) {
         if (offset === 0) continue;
         let pos = (idxUltimo + offset + ruedaAmericana.length) % ruedaAmericana.length;
         let dist = Math.abs(offset);
         let pwr = (fuenteRuleta === "Física") ? (35 - dist * 6) : (20 - dist * 4);
-        sumarPuntos(ruedaAmericana[pos], pwr, `Pico Gaussiano (${dist} pos)`);
+        sumarPuntos(ruedaAmericana[pos], pwr, `Pico de sector (${dist} pos)`);
       }
     }
 
-    // 4. CADENAS MARKOV AVANZADAS
+    // 4. CADENAS MARKOV
     if (len >= 2) {
       const prev = historial[len - 2].num;
       for (let i = 0; i < len - 2; i++) {
@@ -502,10 +503,9 @@
       }
     }
 
-    // Excluir el número actual de salir repetido de inmediato
     delete candidatos[ultimo];
 
-    // Ordenar los mejores candidatos
+    // Ordenar para tomar SOLO las 2 mejores opciones
     let listaOrdenada = Object.keys(candidatos).map(key => ({
       num: key,
       peso: candidatos[key].peso,
@@ -521,7 +521,7 @@
         setElegidos.add(item.num);
         elegidos.push(item);
       }
-      if (elegidos.length === 2) break; // SOLO 2 PREDICCIONES
+      if (elegidos.length === 2) break; // LÍMITE EXACTO DE 2 NUMEROS
     }
 
     while (elegidos.length < 2) {
@@ -532,12 +532,12 @@
       }
     }
 
-    // Guardar las 2 predicciones para verificar aciertos futuros
+    // Guarda los 2 números elegidos para evaluar el siguiente acierto
     ultimasPredicciones = elegidos.map(e => e.num);
 
     let totalPeso = elegidos.reduce((acc, curr) => acc + curr.peso, 0);
 
-    // Pintar las 2 tarjetas principales
+    // Muestra las 2 cajas de predicción
     for (let i = 0; i < 2; i++) {
       let conf = Math.min(Math.round((elegidos[i].peso / (totalPeso || 1)) * 100) + 20, 96);
       document.getElementById(`pred${i+1}`).innerText = elegidos[i].num;
