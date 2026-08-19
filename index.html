@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spintec AI Pattern Engine - Ruleta Americana (v2)</title>
+  <title>Spintec AI Engine v3 - 10 Predicciones & Hotspots</title>
   <style>
     :root {
-      --bg-dark: #0b0f19;
-      --card-bg: #151d30;
-      --accent-gold: #fbbf24;
-      --accent-cyan: #38bdf8;
+      --bg-dark: #080d1a;
+      --card-bg: #111827;
+      --accent-gold: #f59e0b;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #a855f7;
       --green-spintec: #10b981;
       --red-spintec: #ef4444;
-      --black-spintec: #334155;
+      --black-spintec: #374151;
     }
 
     body {
@@ -20,20 +21,20 @@
       background-color: var(--bg-dark);
       color: #f8fafc;
       margin: 0;
-      padding: 15px;
+      padding: 12px;
       display: flex;
       justify-content: center;
     }
 
     .container {
-      max-width: 950px;
+      max-width: 1000px;
       width: 100%;
       display: grid;
       grid-template-columns: 1fr;
       gap: 15px;
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 850px) {
       .container { grid-template-columns: 2fr 1fr; }
     }
 
@@ -42,60 +43,124 @@
       border-radius: 12px;
       padding: 15px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      border: 1px solid #1e293b;
+      border: 1px solid #1f2937;
     }
 
     h2 {
       margin-top: 0;
       color: var(--accent-gold);
-      font-size: 1rem;
-      border-bottom: 1px solid #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #374151;
       padding-bottom: 8px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    /* Grid de las 5 Predicciones */
-    .predictions {
+    /* Selector de Fuente (Física vs Virtual) */
+    .wheel-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .btn-source {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #374151;
+      background: #1f2937;
+      color: #9ca3af;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .btn-source.active {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+    }
+
+    /* Grid de 10 Predicciones (2 filas x 5 columnas) */
+    .predictions-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 6px;
-      margin: 15px 0;
+      margin: 12px 0;
     }
 
-    .pred-box {
-      background: #070a12;
-      border: 2px solid var(--accent-gold);
-      border-radius: 8px;
-      padding: 8px 2px;
+    .pred-card {
+      background: #030712;
+      border: 1.5px solid var(--accent-gold);
+      border-radius: 6px;
+      padding: 6px 2px;
       text-align: center;
     }
 
-    .pred-box .number {
-      font-size: 1.8rem;
+    .pred-card.hotspot-boost {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+    }
+
+    .pred-card .number {
+      font-size: 1.5rem;
       font-weight: 800;
       color: var(--accent-gold);
     }
 
-    .pred-box .confidence {
-      font-size: 0.7rem;
-      color: var(--accent-cyan);
-      font-weight: bold;
-      margin-top: 2px;
+    .pred-card.hotspot-boost .number {
+      color: var(--accent-purple);
     }
 
-    .pred-box .reason {
-      font-size: 0.6rem;
-      color: #94a3b8;
-      margin-top: 4px;
-      height: 28px;
+    .pred-card .confidence {
+      font-size: 0.65rem;
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+
+    .pred-card .reason {
+      font-size: 0.58rem;
+      color: #9ca3af;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1.1;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    /* Modificador Hotspot */
+    .hotspot-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #1f2937;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .hotspot-controls label {
+      font-size: 0.75rem;
+      color: var(--accent-purple);
+      font-weight: bold;
+    }
+
+    .hotspot-btn {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      border: none;
+      background: #374151;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .hotspot-btn.selected {
+      background: var(--accent-purple);
+      font-weight: bold;
     }
 
     /* Teclado Táctil */
@@ -103,15 +168,14 @@
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 6px;
-      margin-top: 10px;
     }
 
     .key {
       background: var(--black-spintec);
       color: #fff;
       border: none;
-      padding: 12px 0;
-      font-size: 1rem;
+      padding: 10px 0;
+      font-size: 0.95rem;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
@@ -122,31 +186,40 @@
     .key.black { background-color: var(--black-spintec); }
     .key.green { background-color: var(--green-spintec); }
 
-    /* Historial */
+    /* Historial y Hot Numbers */
     .history-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      max-height: 220px;
+      gap: 5px;
+      max-height: 150px;
       overflow-y: auto;
       padding: 5px;
     }
 
     .badge {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
-    .status-bar {
+    .hot-list {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .hot-badge {
+      background: #374151;
+      border: 1px solid var(--accent-gold);
+      padding: 4px 8px;
+      border-radius: 4px;
       font-size: 0.75rem;
-      color: #64748b;
-      margin-top: 10px;
+      color: var(--accent-gold);
     }
 
     .btn-clear {
@@ -168,36 +241,27 @@
   <!-- Panel Principal -->
   <div class="card">
     <h2>
-      Top 5 Jugadas Sugeridas (IA Spintec)
-      <span style="font-size: 0.7rem; color: var(--accent-cyan);" id="data-count">Entradas: 0</span>
+      Top 10 Jugadas Sugeridas (IA Spintec)
+      <span style="font-size: 0.7rem; color: var(--accent-cyan);" id="data-count">Registros: 0</span>
     </h2>
-    
-    <div class="predictions">
-      <div class="pred-box">
-        <div class="number" id="pred1">-</div>
-        <div class="confidence" id="conf1">0%</div>
-        <div class="reason" id="reason1">Sin datos</div>
-      </div>
-      <div class="pred-box">
-        <div class="number" id="pred2">-</div>
-        <div class="confidence" id="conf2">0%</div>
-        <div class="reason" id="reason2">Sin datos</div>
-      </div>
-      <div class="pred-box">
-        <div class="number" id="pred3">-</div>
-        <div class="confidence" id="conf3">0%</div>
-        <div class="reason" id="reason3">Sin datos</div>
-      </div>
-      <div class="pred-box">
-        <div class="number" id="pred4">-</div>
-        <div class="confidence" id="conf4">0%</div>
-        <div class="reason" id="reason4">Sin datos</div>
-      </div>
-      <div class="pred-box">
-        <div class="number" id="pred5">-</div>
-        <div class="confidence" id="conf5">0%</div>
-        <div class="reason" id="reason5">Sin datos</div>
-      </div>
+
+    <!-- Seleccionar Ruleta -->
+    <div class="wheel-selector">
+      <button class="btn-source active" id="btn-fisica" onclick="setFuente('Física')">Ruleta Física (Soplador)</button>
+      <button class="btn-source" id="btn-virtual" onclick="setFuente('Virtual')">Ruleta Virtual (RNG)</button>
+    </div>
+
+    <!-- 10 Predicciones Grid -->
+    <div class="predictions-grid" id="predGrid"></div>
+
+    <!-- Modificador de Hotspot/Multiplicador -->
+    <div class="hotspot-controls">
+      <label>Marcar Multiplicador Hotspot:</label>
+      <button class="hotspot-btn selected" onclick="setMult('x1')" id="m1">Normal</button>
+      <button class="hotspot-btn" onclick="setMult('x30')" id="m30">x30</button>
+      <button class="hotspot-btn" onclick="setMult('x60')" id="m60">x60</button>
+      <button class="hotspot-btn" onclick="setMult('x150')" id="m150">x150</button>
+      <button class="hotspot-btn" onclick="setMult('x300')" id="m300">x300</button>
     </div>
 
     <h2>Teclado Tactil (Americana 0/00)</h2>
@@ -206,10 +270,15 @@
 
   <!-- Panel Lateral -->
   <div class="card">
-    <h2>Historial & Estado IA</h2>
+    <h2>Números Calientes (Hotspot/Frecuencia)</h2>
+    <div class="hot-list" id="hotNumbers">
+      <span style="font-size: 0.75rem; color: #64748b;">Analizando frecuencia...</span>
+    </div>
+
+    <h2 style="margin-top: 15px;">Historial de Partida</h2>
     <div class="history-list" id="history"></div>
-    <div class="status-bar" id="status">Ingresa tiros para calibrar patrones...</div>
-    <button class="btn-clear" onclick="limpiarHistorial()">Reiniciar Partida</button>
+
+    <button class="btn-clear" onclick="limpiarHistorial()">Reiniciar Todo</button>
   </div>
 </div>
 
@@ -224,8 +293,10 @@
 
   const rojos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
   let historial = [];
+  let fuenteRuleta = "Física";
+  let multiplicadorActual = "x1";
 
-  function initKeypad() {
+  function initUI() {
     const keypad = document.getElementById('keypad');
     const botones = ["0", "00", ...Array.from({length: 36}, (_, i) => (i + 1).toString())];
 
@@ -236,6 +307,33 @@
       btn.onclick = () => agregarNumero(num);
       keypad.appendChild(btn);
     });
+
+    // Crear la cuadrícula de 10 tarjetas de predicción
+    const grid = document.getElementById('predGrid');
+    grid.innerHTML = '';
+    for(let i = 1; i <= 10; i++) {
+      grid.innerHTML += `
+        <div class="pred-card" id="card${i}">
+          <div class="number" id="pred${i}">-</div>
+          <div class="confidence" id="conf${i}">0%</div>
+          <div class="reason" id="reason${i}">Sin datos</div>
+        </div>
+      `;
+    }
+  }
+
+  function setFuente(tipo) {
+    fuenteRuleta = tipo;
+    document.getElementById('btn-fisica').classList.toggle('active', tipo === 'Física');
+    document.getElementById('btn-virtual').classList.toggle('active', tipo === 'Virtual');
+    ejecutarMotorIA();
+  }
+
+  function setMult(val) {
+    multiplicadorActual = val;
+    ["1", "30", "60", "150", "300"].forEach(m => {
+      document.getElementById(`m${m}`).classList.toggle('selected', `x${m}` === val || (m==='1' && val==='x1'));
+    });
   }
 
   function getClaseColor(num) {
@@ -244,7 +342,8 @@
   }
 
   function agregarNumero(num) {
-    historial.push(num);
+    historial.push({ num: num, fuente: fuenteRuleta, mult: multiplicadorActual });
+    setMult('x1'); // Resetear a normal tras presionar
     actualizarHistorialUI();
     ejecutarMotorIA();
   }
@@ -253,116 +352,124 @@
     const historyDiv = document.getElementById('history');
     historyDiv.innerHTML = '';
     
-    [...historial].reverse().forEach(num => {
+    [...historial].reverse().forEach(item => {
       const badge = document.createElement('div');
-      badge.className = `badge ${getClaseColor(num)}`;
-      badge.innerText = num;
+      badge.className = `badge ${getClaseColor(item.num)}`;
+      badge.innerText = item.num;
+      if (item.mult !== 'x1') {
+        badge.style.border = "2px solid var(--accent-purple)";
+      }
       historyDiv.appendChild(badge);
     });
 
-    document.getElementById('data-count').innerText = `Entradas: ${historial.length}`;
+    document.getElementById('data-count').innerText = `Registros: ${historial.length}`;
+    calcularHotNumbers();
+  }
+
+  function calcularHotNumbers() {
+    let conteo = {};
+    historial.forEach(item => {
+      conteo[item.num] = (conteo[item.num] || 0) + 1;
+    });
+
+    let ordenados = Object.keys(conteo).sort((a,b) => conteo[b] - conteo[a]).slice(0, 3);
+    const hotDiv = document.getElementById('hotNumbers');
+    
+    if (ordenados.length === 0) {
+      hotDiv.innerHTML = '<span style="font-size: 0.75rem; color: #64748b;">Sin datos...</span>';
+      return;
+    }
+
+    hotDiv.innerHTML = '';
+    ordenados.forEach(num => {
+      hotDiv.innerHTML += `<div class="hot-badge">🔥 ${num} (${conteo[num]}x)</div>`;
+    });
   }
 
   function limpiarHistorial() {
     historial = [];
     actualizarHistorialUI();
-    for(let i = 1; i <= 5; i++) {
+    for(let i = 1; i <= 10; i++) {
       document.getElementById(`pred${i}`).innerText = '-';
       document.getElementById(`conf${i}`).innerText = '0%';
       document.getElementById(`reason${i}`).innerText = 'Sin datos';
+      document.getElementById(`card${i}`).classList.remove('hotspot-boost');
     }
-    document.getElementById('status').innerText = 'Partida reiniciada.';
   }
 
-  // MOTOR DE IA Y DETECCIÓN DE PATRONES
+  // MOTOR IA DE NÚMEROS Y HOTSPOTS (10 PREDICCIONES)
   function ejecutarMotorIA() {
     if (historial.length === 0) return;
 
     let candidatos = {};
 
     function sumarPuntos(num, puntos, motivo) {
-      if (!candidatos[num]) {
-        candidatos[num] = { peso: 0, motivos: [] };
-      }
+      if (!candidatos[num]) candidatos[num] = { peso: 0, motivos: [] };
       candidatos[num].peso += puntos;
-      if (!candidatos[num].motivos.includes(motivo)) {
-        candidatos[num].motivos.push(motivo);
-      }
+      if (!candidatos[num].motivos.includes(motivo)) candidatos[num].motivos.push(motivo);
     }
 
     const len = historial.length;
-    const ultimo = historial[len - 1];
+    const ultimoObj = historial[len - 1];
+    const ultimo = ultimoObj.num;
 
-    // 1. MARKOV: Secuencias de 2 y 3 números
+    // 1. PESO POR MULTIPLICADORES / HOTSPOTS PREVIOS
+    historial.forEach(item => {
+      if (item.mult !== 'x1') {
+        let multVal = Number(item.mult.replace('x', ''));
+        sumarPuntos(item.num, multVal / 5, `Hotspot recurrente ${item.mult}`);
+      }
+    });
+
+    // 2. AJUSTE DE TIPO DE MESA (Física vs Virtual)
+    let pesoPlato = (fuenteRuleta === "Física") ? 25 : 12; // En la física, el plato tiene más relevancia
+    let pesoMarkov = (fuenteRuleta === "Virtual") ? 35 : 20; // En la virtual, el RNG premia patrones de secuencia
+
+    // 3. ANÁLISIS DE MARKOV
     if (len >= 2) {
-      const prev = historial[len - 2];
+      const prev = historial[len - 2].num;
       for (let i = 0; i < len - 2; i++) {
-        if (historial[i] === prev && historial[i + 1] === ultimo) {
-          let sig = historial[i + 2];
-          sumarPuntos(sig, 45, `Secuencia [${prev}, ${ultimo}]`);
+        if (historial[i].num === prev && historial[i + 1].num === ultimo) {
+          sumarPuntos(historial[i + 2].num, pesoMarkov + 15, `Secuencia [${prev}, ${ultimo}]`);
         }
       }
     }
 
-    if (len >= 1) {
-      for (let i = 0; i < len - 1; i++) {
-        if (historial[i] === ultimo) {
-          let sig = historial[i + 1];
-          sumarPuntos(sig, 25, `Transición tras el ${ultimo}`);
-        }
-      }
-    }
-
-    // 2. ARITMÉTICA Y MULTIPLICACIÓN
+    // 4. ARITMÉTICA Y ESPACOS
     if (ultimo !== "0" && ultimo !== "00") {
       let val = Number(ultimo);
-      if (val * 2 <= 36) sumarPuntos((val * 2).toString(), 20, `Doble de ${val}`);
-      if (val * 3 <= 36) sumarPuntos((val * 3).toString(), 20, `Triple de ${val}`);
-      if (val % 2 === 0) sumarPuntos((val / 2).toString(), 18, `Mitad de ${val}`);
+      if (val * 2 <= 36) sumarPuntos((val * 2).toString(), 15, `Doble de ${val}`);
+      if (val * 3 <= 36) sumarPuntos((val * 3).toString(), 15, `Triple de ${val}`);
+      if (val % 2 === 0) sumarPuntos((val / 2).toString(), 12, `Mitad de ${val}`);
     }
 
     // Ceros opuestos
-    if (ultimo === "0") sumarPuntos("00", 30, "Cero opuesto");
-    if (ultimo === "00") sumarPuntos("0", 30, "Cero opuesto");
+    if (ultimo === "0") sumarPuntos("00", 25, "Cero opuesto");
+    if (ultimo === "00") sumarPuntos("0", 25, "Cero opuesto");
 
-    // Espejo
-    if (ultimo.length === 2 && ultimo !== "00") {
-      let espejo = ultimo.split('').reverse().join('');
-      if (Number(espejo) <= 36) sumarPuntos(espejo, 15, `Espejo de ${ultimo}`);
-    }
-
-    // 3. SECTOR AMPLIADO (Vecinos a 1 y 2 casillas de distancia en el plato)
+    // 5. COBERTURA EXTENDIDA DEL PLATO (Hasta 3 casillas de distancia)
     let idx = ruedaAmericana.indexOf(ultimo);
     if (idx !== -1) {
-      let izq1 = ruedaAmericana[(idx - 1 + ruedaAmericana.length) % ruedaAmericana.length];
-      let der1 = ruedaAmericana[(idx + 1) % ruedaAmericana.length];
-      let izq2 = ruedaAmericana[(idx - 2 + ruedaAmericana.length) % ruedaAmericana.length];
-      let der2 = ruedaAmericana[(idx + 2) % ruedaAmericana.length];
-
-      sumarPuntos(izq1, 22, `Vecino directo (${ultimo})`);
-      sumarPuntos(der1, 22, `Vecino directo (${ultimo})`);
-      sumarPuntos(izq2, 14, `Sector cercano (${ultimo})`);
-      sumarPuntos(der2, 14, `Sector cercano (${ultimo})`);
+      for (let offset = -3; offset <= 3; offset++) {
+        if (offset === 0) continue;
+        let pos = (idx + offset + ruedaAmericana.length) % ruedaAmericana.length;
+        let dist = Math.abs(offset);
+        sumarPuntos(ruedaAmericana[pos], pesoPlato - (dist * 4), `Sector a ${dist} pos.`);
+      }
     }
 
-    // Excluir el último tiro salvo que se haya repetido
+    // Remover la última tirada para evitar duplicar directa
     delete candidatos[ultimo];
 
-    // Ordenar resultados por puntuación
+    // Ordenar los mejores candidatos
     let listaOrdenada = Object.keys(candidatos).map(key => ({
       num: key,
       peso: candidatos[key].peso,
-      motivo: candidatos[key].motivos[joinStr = " + "]
+      motivo: candidatos[key].motivos.join(" + ")
     })).sort((a, b) => b.peso - a.peso);
 
-    const respaldo = [
-      {num: "0", motivo: "Cero neutro"}, 
-      {num: "00", motivo: "Cero neutro"}, 
-      {num: "17", motivo: "Centro plato"}, 
-      {num: "23", motivo: "Frecuencia base"},
-      {num: "5", motivo: "Frecuencia base"}
-    ];
-
+    // Rellenar hasta completar 10 números
+    const respaldo = ["0", "00", "17", "23", "5", "10", "25", "30", "1", "36"];
     let elegidos = [];
     let setElegidos = new Set();
 
@@ -371,31 +478,36 @@
         setElegidos.add(item.num);
         elegidos.push(item);
       }
-      if (elegidos.length === 5) break;
+      if (elegidos.length === 10) break;
     }
 
-    while (elegidos.length < 5) {
+    while (elegidos.length < 10) {
       let r = respaldo.shift();
-      if (!setElegidos.has(r.num) && r.num !== ultimo) {
-        setElegidos.add(r.num);
-        elegidos.push({ num: r.num, peso: 10, motivo: r.motivo });
+      if (!setElegidos.has(r) && r !== ultimo) {
+        setElegidos.add(r);
+        elegidos.push({ num: r, peso: 8, motivo: "Cobertura plato" });
       }
     }
 
     let totalPeso = elegidos.reduce((acc, curr) => acc + curr.peso, 0);
 
-    // Actualizar interfaz para las 5 casillas
-    for (let i = 0; i < 5; i++) {
-      let conf = Math.min(Math.round((elegidos[i].peso / (totalPeso || 1)) * 100) + 15, 95);
+    // Renderizar las 10 tarjetas
+    for (let i = 0; i < 10; i++) {
+      let conf = Math.min(Math.round((elegidos[i].peso / (totalPeso || 1)) * 100) + 10, 92);
       document.getElementById(`pred${i+1}`).innerText = elegidos[i].num;
       document.getElementById(`conf${i+1}`).innerText = `${conf}% Conf.`;
       document.getElementById(`reason${i+1}`).innerText = elegidos[i].motivo;
-    }
 
-    document.getElementById('status').innerText = `IA analizando ${len} tiradas. Cobertura ampliada a 5 sectores.`;
+      const card = document.getElementById(`card${i+1}`);
+      if (elegidos[i].motivo.includes('Hotspot')) {
+        card.classList.add('hotspot-boost');
+      } else {
+        card.classList.remove('hotspot-boost');
+      }
+    }
   }
 
-  initKeypad();
+  initUI();
 </script>
 
 </body>
