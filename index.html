@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spintec AI Engine v3 - 10 Predicciones & Hotspots</title>
+  <title>Spintec AI Deep Pattern Engine v4</title>
   <style>
     :root {
       --bg-dark: #080d1a;
@@ -58,7 +58,7 @@
       align-items: center;
     }
 
-    /* Selector de Fuente (Física vs Virtual) */
+    /* Selector de Fuente */
     .wheel-selector {
       display: flex;
       gap: 10px;
@@ -83,7 +83,7 @@
       border-color: var(--accent-cyan);
     }
 
-    /* Grid de 10 Predicciones (2 filas x 5 columnas) */
+    /* Grid de 10 Predicciones */
     .predictions-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -123,7 +123,7 @@
     .pred-card .reason {
       font-size: 0.58rem;
       color: #9ca3af;
-      height: 24px;
+      height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -186,7 +186,7 @@
     .key.black { background-color: var(--black-spintec); }
     .key.green { background-color: var(--green-spintec); }
 
-    /* Historial y Hot Numbers */
+    /* Historial y Stats */
     .history-list {
       display: flex;
       flex-wrap: wrap;
@@ -241,8 +241,8 @@
   <!-- Panel Principal -->
   <div class="card">
     <h2>
-      Top 10 Jugadas Sugeridas (IA Spintec)
-      <span style="font-size: 0.7rem; color: var(--accent-cyan);" id="data-count">Registros: 0</span>
+      Top 10 Jugadas Sugeridas (Deep AI Spintec v4)
+      <span style="font-size: 0.7rem; color: var(--accent-cyan);" id="data-count">Entradas: 0</span>
     </h2>
 
     <!-- Seleccionar Ruleta -->
@@ -256,7 +256,7 @@
 
     <!-- Modificador de Hotspot/Multiplicador -->
     <div class="hotspot-controls">
-      <label>Marcar Multiplicador Hotspot:</label>
+      <label>Multiplicador Hotspot:</label>
       <button class="hotspot-btn selected" onclick="setMult('x1')" id="m1">Normal</button>
       <button class="hotspot-btn" onclick="setMult('x30')" id="m30">x30</button>
       <button class="hotspot-btn" onclick="setMult('x60')" id="m60">x60</button>
@@ -270,9 +270,9 @@
 
   <!-- Panel Lateral -->
   <div class="card">
-    <h2>Números Calientes (Hotspot/Frecuencia)</h2>
+    <h2>Números Calientes / Tendencia</h2>
     <div class="hot-list" id="hotNumbers">
-      <span style="font-size: 0.75rem; color: #64748b;">Analizando frecuencia...</span>
+      <span style="font-size: 0.75rem; color: #64748b;">Calibrando físicas...</span>
     </div>
 
     <h2 style="margin-top: 15px;">Historial de Partida</h2>
@@ -283,7 +283,7 @@
 </div>
 
 <script>
-  // Rueda Americana Oficial Spintec (38 casillas)
+  // Rueda Americana Oficial Spintec (38 casillas exactas en secuencia del cilindro)
   const ruedaAmericana = [
     "0", "28", "9", "26", "30", "11", "7", "20", "32", "17", 
     "5", "22", "34", "15", "3", "24", "36", "13", "1", "00", 
@@ -308,7 +308,6 @@
       keypad.appendChild(btn);
     });
 
-    // Crear la cuadrícula de 10 tarjetas de predicción
     const grid = document.getElementById('predGrid');
     grid.innerHTML = '';
     for(let i = 1; i <= 10; i++) {
@@ -343,7 +342,7 @@
 
   function agregarNumero(num) {
     historial.push({ num: num, fuente: fuenteRuleta, mult: multiplicadorActual });
-    setMult('x1'); // Resetear a normal tras presionar
+    setMult('x1');
     actualizarHistorialUI();
     ejecutarMotorIA();
   }
@@ -362,7 +361,7 @@
       historyDiv.appendChild(badge);
     });
 
-    document.getElementById('data-count').innerText = `Registros: ${historial.length}`;
+    document.getElementById('data-count').innerText = `Entradas: ${historial.length}`;
     calcularHotNumbers();
   }
 
@@ -376,7 +375,7 @@
     const hotDiv = document.getElementById('hotNumbers');
     
     if (ordenados.length === 0) {
-      hotDiv.innerHTML = '<span style="font-size: 0.75rem; color: #64748b;">Sin datos...</span>';
+      hotDiv.innerHTML = '<span style="font-size: 0.75rem; color: #64748b;">Calibrando...</span>';
       return;
     }
 
@@ -397,7 +396,7 @@
     }
   }
 
-  // MOTOR IA DE NÚMEROS Y HOTSPOTS (10 PREDICCIONES)
+  // MOTOR DE IA V4 - DEEP PATTERN ENGINE
   function ejecutarMotorIA() {
     if (historial.length === 0) return;
 
@@ -413,63 +412,87 @@
     const ultimoObj = historial[len - 1];
     const ultimo = ultimoObj.num;
 
-    // 1. PESO POR MULTIPLICADORES / HOTSPOTS PREVIOS
-    historial.forEach(item => {
-      if (item.mult !== 'x1') {
-        let multVal = Number(item.mult.replace('x', ''));
-        sumarPuntos(item.num, multVal / 5, `Hotspot recurrente ${item.mult}`);
-      }
-    });
-
-    // 2. AJUSTE DE TIPO DE MESA (Física vs Virtual)
-    let pesoPlato = (fuenteRuleta === "Física") ? 25 : 12; // En la física, el plato tiene más relevancia
-    let pesoMarkov = (fuenteRuleta === "Virtual") ? 35 : 20; // En la virtual, el RNG premia patrones de secuencia
-
-    // 3. ANÁLISIS DE MARKOV
-    if (len >= 2) {
-      const prev = historial[len - 2].num;
-      for (let i = 0; i < len - 2; i++) {
-        if (historial[i].num === prev && historial[i + 1].num === ultimo) {
-          sumarPuntos(historial[i + 2].num, pesoMarkov + 15, `Secuencia [${prev}, ${ultimo}]`);
+    // A. MEDIDA DE DESPLAZAMIENTO ANGULAR (DESPLAZAMIENTO DELTA DE SOPLADOR)
+    let deltasFrecuentes = {};
+    if (len >= 3) {
+      for (let i = 1; i < len; i++) {
+        let idxPrev = ruedaAmericana.indexOf(historial[i-1].num);
+        let idxCurr = ruedaAmericana.indexOf(historial[i].num);
+        if (idxPrev !== -1 && idxCurr !== -1) {
+          let delta = Math.abs(idxCurr - idxPrev);
+          if (delta > 19) delta = 38 - delta; // Distancia mínima en círculo
+          deltasFrecuentes[delta] = (deltasFrecuentes[delta] || 0) + 1;
         }
       }
     }
 
-    // 4. ARITMÉTICA Y ESPACOS
-    if (ultimo !== "0" && ultimo !== "00") {
-      let val = Number(ultimo);
-      if (val * 2 <= 36) sumarPuntos((val * 2).toString(), 15, `Doble de ${val}`);
-      if (val * 3 <= 36) sumarPuntos((val * 3).toString(), 15, `Triple de ${val}`);
-      if (val % 2 === 0) sumarPuntos((val / 2).toString(), 12, `Mitad de ${val}`);
+    // B. APLICACIÓN DE DESPLAZAMIENTOS MÁS FRECUENTES DE LA SESIÓN
+    let idxUltimo = ruedaAmericana.indexOf(ultimo);
+    if (idxUltimo !== -1) {
+      Object.keys(deltasFrecuentes).forEach(deltaStr => {
+        let d = Number(deltaStr);
+        let pesoDelta = deltasFrecuentes[deltaStr] * 18;
+
+        let posA = (idxUltimo + d) % ruedaAmericana.length;
+        let posB = (idxUltimo - d + ruedaAmericana.length) % ruedaAmericana.length;
+
+        sumarPuntos(ruedaAmericana[posA], pesoDelta, `Delta ±${d} del plato`);
+        sumarPuntos(ruedaAmericana[posB], pesoDelta, `Delta ±${d} del plato`);
+      });
     }
 
-    // Ceros opuestos
-    if (ultimo === "0") sumarPuntos("00", 25, "Cero opuesto");
-    if (ultimo === "00") sumarPuntos("0", 25, "Cero opuesto");
+    // C. ANÁLISIS DE HOTSPOTS REGISTRADOS
+    historial.forEach(item => {
+      if (item.mult !== 'x1') {
+        let multVal = Number(item.mult.replace('x', ''));
+        sumarPuntos(item.num, multVal / 4, `Hotspot previo ${item.mult}`);
+      }
+    });
 
-    // 5. COBERTURA EXTENDIDA DEL PLATO (Hasta 3 casillas de distancia)
-    let idx = ruedaAmericana.indexOf(ultimo);
-    if (idx !== -1) {
-      for (let offset = -3; offset <= 3; offset++) {
+    // D. AMPLITUD DE SECTOR HASTA ±5 CASILLAS (Para absorber rebotes largos)
+    if (idxUltimo !== -1) {
+      for (let offset = -5; offset <= 5; offset++) {
         if (offset === 0) continue;
-        let pos = (idx + offset + ruedaAmericana.length) % ruedaAmericana.length;
+        let pos = (idxUltimo + offset + ruedaAmericana.length) % ruedaAmericana.length;
         let dist = Math.abs(offset);
-        sumarPuntos(ruedaAmericana[pos], pesoPlato - (dist * 4), `Sector a ${dist} pos.`);
+        let pwr = (fuenteRuleta === "Física") ? (30 - dist * 4) : (18 - dist * 3);
+        sumarPuntos(ruedaAmericana[pos], pwr, `Sector amplio (${dist} pos)`);
       }
     }
 
-    // Remover la última tirada para evitar duplicar directa
+    // E. CADENAS MARKOV DE SEGUNDO Y TERCER ORDEN
+    if (len >= 2) {
+      const prev = historial[len - 2].num;
+      for (let i = 0; i < len - 2; i++) {
+        if (historial[i].num === prev && historial[i + 1].num === ultimo) {
+          sumarPuntos(historial[i + 2].num, 35, `Patrón Markov [${prev}->${ultimo}]`);
+        }
+      }
+    }
+
+    // F. MATRIZ DE CEROS Y ESPEJOS
+    if (ultimo === "0") {
+      sumarPuntos("00", 28, "Cero cruzado");
+      sumarPuntos("28", 20, "Vecino del 0");
+      sumarPuntos("2", 20, "Vecino del 0");
+    } else if (ultimo === "00") {
+      sumarPuntos("0", 28, "Cero cruzado");
+      sumarPuntos("1", 20, "Vecino del 00");
+      sumarPuntos("27", 20, "Vecino del 00");
+    }
+
+    // Excluir el último tiro directo
     delete candidatos[ultimo];
 
-    // Ordenar los mejores candidatos
+    // Ordenar candidatos
     let listaOrdenada = Object.keys(candidatos).map(key => ({
       num: key,
       peso: candidatos[key].peso,
-      motivo: candidatos[key].motivos.join(" + ")
+      motivo: candidatos[key].motivos[0] || "Tendencia física"
     })).sort((a, b) => b.peso - a.peso);
 
-    // Rellenar hasta completar 10 números
-    const respaldo = ["0", "00", "17", "23", "5", "10", "25", "30", "1", "36"];
+    // Respaldo dinámico
+    const respaldo = ["0", "00", "17", "23", "5", "10", "25", "30", "1", "36", "13", "24"];
     let elegidos = [];
     let setElegidos = new Set();
 
@@ -485,21 +508,21 @@
       let r = respaldo.shift();
       if (!setElegidos.has(r) && r !== ultimo) {
         setElegidos.add(r);
-        elegidos.push({ num: r, peso: 8, motivo: "Cobertura plato" });
+        elegidos.push({ num: r, peso: 10, motivo: "Inercia de mesa" });
       }
     }
 
     let totalPeso = elegidos.reduce((acc, curr) => acc + curr.peso, 0);
 
-    // Renderizar las 10 tarjetas
+    // Pintar en pantalla las 10 tarjetas
     for (let i = 0; i < 10; i++) {
-      let conf = Math.min(Math.round((elegidos[i].peso / (totalPeso || 1)) * 100) + 10, 92);
+      let conf = Math.min(Math.round((elegidos[i].peso / (totalPeso || 1)) * 100) + 12, 94);
       document.getElementById(`pred${i+1}`).innerText = elegidos[i].num;
       document.getElementById(`conf${i+1}`).innerText = `${conf}% Conf.`;
       document.getElementById(`reason${i+1}`).innerText = elegidos[i].motivo;
 
       const card = document.getElementById(`card${i+1}`);
-      if (elegidos[i].motivo.includes('Hotspot')) {
+      if (elegidos[i].motivo.includes('Hotspot') || elegidos[i].motivo.includes('Delta')) {
         card.classList.add('hotspot-boost');
       } else {
         card.classList.remove('hotspot-boost');
