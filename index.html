@@ -3,135 +3,256 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analizador de Patrones - Spinte Roulette</title>
+  <title>Spintec AI Quantum Engine v8 - Alta Precisión</title>
   <style>
     :root {
-      --bg-dark: #121826;
-      --card-bg: #1f293d;
+      --bg-dark: #080d1a;
+      --card-bg: #111827;
       --accent-gold: #fbbf24;
-      --green-spin: #10b981;
-      --red-spin: #ef4444;
-      --black-spin: #1f2937;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #a855f7;
+      --green-spintec: #10b981;
+      --red-spintec: #ef4444;
+      --black-spintec: #374151;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background-color: var(--bg-dark);
-      color: #f3f4f6;
+      color: #f8fafc;
       margin: 0;
-      padding: 20px;
+      padding: 12px;
       display: flex;
       justify-content: center;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       width: 100%;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 15px;
     }
 
-    @media (min-width: 768px) {
-      .container {
-        grid-template-columns: 2fr 1fr;
-      }
+    @media (min-width: 850px) {
+      .container { grid-template-columns: 2.2fr 1fr; }
     }
 
     .card {
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      padding: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      border: 1px solid #1f2937;
     }
 
     h2 {
       margin-top: 0;
       color: var(--accent-gold);
-      font-size: 1.2rem;
+      font-size: 0.95rem;
       border-bottom: 1px solid #374151;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* Teclado de Ruleta */
-    .keypad {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      margin-bottom: 15px;
+    /* Selector de Fuente */
+    .wheel-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
-    .key {
-      background: #374151;
-      color: #fff;
-      border: none;
-      padding: 12px 0;
-      font-size: 1rem;
-      font-weight: bold;
+    .btn-source {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #374151;
+      background: #1f2937;
+      color: #9ca3af;
       border-radius: 6px;
       cursor: pointer;
-      transition: transform 0.1s, background 0.2s;
+      font-weight: bold;
+      font-size: 0.8rem;
     }
 
-    .key:active {
-      transform: scale(0.95);
+    .btn-source.active {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
     }
 
-    .key.red { background-color: var(--red-spin); }
-    .key.black { background-color: var(--black-spin); }
-    .key.green { background-color: var(--green-spin); }
-
-    /* Predicciones */
-    .predictions {
-      display: flex;
-      justify-content: space-around;
+    /* Grid de 12 Predicciones */
+    .predictions-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       margin: 15px 0;
     }
 
-    .pred-box {
-      background: #111827;
-      border: 2px solid var(--accent-gold);
-      border-radius: 10px;
-      padding: 15px;
+    @media (max-width: 500px) {
+      .predictions-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .pred-card {
+      background: #030712;
+      border: 1.5px solid var(--accent-gold);
+      border-radius: 8px;
+      padding: 8px 4px;
       text-align: center;
-      width: 25%;
+      box-shadow: 0 0 6px rgba(251, 191, 36, 0.15);
+      position: relative;
     }
 
-    .pred-box .number {
-      font-size: 2rem;
+    .pred-card.hotspot-boost {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+    }
+
+    .pred-card .rank {
+      font-size: 0.65rem;
+      color: var(--accent-cyan);
       font-weight: bold;
-      color: var(--accent-gold);
+      text-transform: uppercase;
     }
 
-    .pred-box .reason {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-top: 5px;
+    .pred-card .number {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+      margin: 2px 0;
     }
+
+    .pred-card.hotspot-boost .number {
+      color: var(--accent-purple);
+    }
+
+    .pred-card .confidence {
+      font-size: 0.75rem;
+      color: #34d399;
+      font-weight: bold;
+    }
+
+    .pred-card .reason {
+      font-size: 0.62rem;
+      color: #9ca3af;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+      margin-top: 3px;
+    }
+
+    /* Modificador Hotspot */
+    .hotspot-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #1f2937;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .hotspot-controls label {
+      font-size: 0.75rem;
+      color: var(--accent-purple);
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .hotspot-btn {
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      border: none;
+      background: #374151;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .hotspot-btn.selected {
+      background: var(--accent-purple);
+      font-weight: bold;
+    }
+
+    /* Teclado Táctil */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .key {
+      background: var(--black-spintec);
+      color: #fff;
+      border: none;
+      padding: 10px 0;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .key:active { transform: scale(0.95); }
+    .key.red { background-color: var(--red-spintec); }
+    .key.black { background-color: var(--black-spintec); }
+    .key.green { background-color: var(--green-spintec); }
 
     /* Historial */
     .history-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      max-height: 120px;
+      gap: 6px;
+      max-height: 220px;
       overflow-y: auto;
       padding: 5px;
     }
 
     .badge {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      box-sizing: border-box;
+    }
+
+    /* ACIERTO PREDECIDO -> COLOR DORADO */
+    .badge.hit-gold {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24, #d97706) !important;
+      color: #000 !important;
+      font-weight: 900;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px #fbbf24, 0 0 15px #f59e0b;
+      transform: scale(1.1);
+    }
+
+    .hot-list {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .hot-badge {
+      background: #374151;
+      border: 1px solid var(--accent-gold);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: var(--accent-gold);
     }
 
     .btn-clear {
-      background: #ef4444;
+      background: #dc2626;
       color: white;
       border: none;
       padding: 10px;
@@ -139,54 +260,87 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Panel Principal: Entrada y Predicciones -->
+  <!-- Panel Principal -->
   <div class="card">
-    <h2>Predicción de Algoritmo Spinte</h2>
-    <p style="font-size: 0.85rem; color: #9ca3af;">Ingresa los números conforme van saliendo en la pantalla:</p>
-    
-    <div class="predictions">
-      <div class="pred-box">
-        <div class="number" id="pred1">-</div>
-        <div class="reason" id="reason1">Esperando datos</div>
-      </div>
-      <div class="pred-box">
-        <div class="number" id="pred2">-</div>
-        <div class="reason" id="reason2">Esperando datos</div>
-      </div>
-      <div class="pred-box">
-        <div class="number" id="pred3">-</div>
-        <div class="reason" id="reason3">Esperando datos</div>
-      </div>
+    <h2>
+      Top 12 Predicciones Quantum v8
+      <span style="font-size: 0.7rem; color: var(--accent-cyan);" id="data-count">Entradas: 0</span>
+    </h2>
+
+    <!-- Seleccionar Ruleta -->
+    <div class="wheel-selector">
+      <button class="btn-source active" id="btn-fisica" onclick="setFuente('Física')">Ruleta Física (Soplador)</button>
+      <button class="btn-source" id="btn-virtual" onclick="setFuente('Virtual')">Ruleta Virtual (RNG)</button>
     </div>
 
-    <h2>Ingreso Rápido de Números</h2>
+    <!-- Grid Dinámico de 12 Predicciones -->
+    <div class="predictions-grid" id="predictions-container"></div>
+
+    <!-- Modificador de Hotspot -->
+    <div class="hotspot-controls">
+      <label>Hotspot:</label>
+      <button class="hotspot-btn selected" onclick="setMult('x1')" id="m1">Normal</button>
+      <button class="hotspot-btn" onclick="setMult('x30')" id="m30">x30</button>
+      <button class="hotspot-btn" onclick="setMult('x60')" id="m60">x60</button>
+      <button class="hotspot-btn" onclick="setMult('x90')" id="m90">x90</button>
+      <button class="hotspot-btn" onclick="setMult('x150')" id="m150">x150</button>
+      <button class="hotspot-btn" onclick="setMult('x300')" id="m300">x300</button>
+    </div>
+
+    <h2>Teclado Táctil (Americana 0/00)</h2>
     <div class="keypad" id="keypad"></div>
   </div>
 
-  <!-- Panel Lateral: Historial y Control -->
+  <!-- Panel Lateral -->
   <div class="card">
-    <h2>Historial de Partida</h2>
+    <h2>Frecuencias Calientes</h2>
+    <div class="hot-list" id="hotNumbers">
+      <span style="font-size: 0.75rem; color: #64748b;">Sin datos...</span>
+    </div>
+
+    <h2 style="margin-top: 15px;">Historial (Aciertos en Dorado ⭐)</h2>
     <div class="history-list" id="history"></div>
-    <button class="btn-clear" onclick="limpiarHistorial()">Reiniciar Sesión</button>
+
+    <button class="btn-clear" onclick="limpiarHistorial()">Reiniciar Todo</button>
   </div>
 </div>
 
 <script>
-  // Orden físico en la rueda americana (incluye 0 y 00)
-  const ruedaAmericana = ["0", "28", "9", "26", "30", "11", "7", "20", "32", "17", "5", "22", "34", "15", "3", "24", "36", "13", "1", "00", "27", "10", "25", "29", "12", "8", "19", "31", "18", "6", "21", "33", "16", "4", "23", "35", "14", "2"];
-  
+  // Rueda Americana Oficial Spintec
+  const ruedaAmericana = [
+    "0", "28", "9", "26", "30", "11", "7", "20", "32", "17", 
+    "5", "22", "34", "15", "3", "24", "36", "13", "1", "00", 
+    "27", "10", "25", "29", "12", "8", "19", "31", "18", "6", 
+    "21", "33", "16", "4", "23", "35", "14", "2"
+  ];
+
   const rojos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
   let historial = [];
+  let fuenteRuleta = "Física";
+  let multiplicadorActual = "x1";
+  let ultimasPredicciones = [];
 
-  // Inicializar teclado interactivo
-  function initKeypad() {
+  function initUI() {
+    const grid = document.getElementById('predictions-container');
+    grid.innerHTML = '';
+    for (let i = 1; i <= 12; i++) {
+      grid.innerHTML += `
+        <div class="pred-card" id="card${i}">
+          <div class="rank">#${i}</div>
+          <div class="number" id="pred${i}">-</div>
+          <div class="confidence" id="conf${i}">0%</div>
+          <div class="reason" id="reason${i}">Esperando...</div>
+        </div>
+      `;
+    }
+
     const keypad = document.getElementById('keypad');
     const botones = ["0", "00", ...Array.from({length: 36}, (_, i) => (i + 1).toString())];
 
@@ -199,101 +353,233 @@
     });
   }
 
+  function setFuente(tipo) {
+    fuenteRuleta = tipo;
+    document.getElementById('btn-fisica').classList.toggle('active', tipo === 'Física');
+    document.getElementById('btn-virtual').classList.toggle('active', tipo === 'Virtual');
+    ejecutarMotorIA();
+  }
+
+  function setMult(val) {
+    multiplicadorActual = val;
+    ["1", "30", "60", "90", "150", "300"].forEach(m => {
+      document.getElementById(`m${m}`).classList.toggle('selected', `x${m}` === val || (m==='1' && val==='x1'));
+    });
+  }
+
   function getClaseColor(num) {
     if (num === "0" || num === "00") return "green";
     return rojos.includes(Number(num)) ? "red" : "black";
   }
 
   function agregarNumero(num) {
-    historial.push(num);
+    let fueAcierto = ultimasPredicciones.includes(num);
+
+    historial.push({ 
+      num: num, 
+      fuente: fuenteRuleta, 
+      mult: multiplicadorActual,
+      acierto: fueAcierto 
+    });
+
+    setMult('x1');
     actualizarHistorialUI();
-    calcularPredicciones();
+    ejecutarMotorIA();
   }
 
   function actualizarHistorialUI() {
     const historyDiv = document.getElementById('history');
     historyDiv.innerHTML = '';
     
-    [...historial].reverse().forEach(num => {
+    [...historial].reverse().forEach(item => {
       const badge = document.createElement('div');
-      badge.className = `badge ${getClaseColor(num)}`;
-      badge.innerText = num;
+      
+      if (item.acierto) {
+        badge.className = `badge hit-gold`; 
+        badge.title = "¡Acierto predecido!";
+      } else {
+        badge.className = `badge ${getClaseColor(item.num)}`;
+        if (item.mult !== 'x1') {
+          badge.style.border = "2px solid var(--accent-purple)";
+        }
+      }
+      
+      badge.innerText = item.num;
       historyDiv.appendChild(badge);
+    });
+
+    document.getElementById('data-count').innerText = `Entradas: ${historial.length}`;
+    calcularHotNumbers();
+  }
+
+  function calcularHotNumbers() {
+    let conteo = {};
+    historial.forEach(item => {
+      conteo[item.num] = (conteo[item.num] || 0) + 1;
+    });
+
+    let ordenados = Object.keys(conteo).sort((a,b) => conteo[b] - conteo[a]).slice(0, 3);
+    const hotDiv = document.getElementById('hotNumbers');
+    
+    if (ordenados.length === 0) {
+      hotDiv.innerHTML = '<span style="font-size: 0.75rem; color: #64748b;">Sin datos...</span>';
+      return;
+    }
+
+    hotDiv.innerHTML = '';
+    ordenados.forEach(num => {
+      hotDiv.innerHTML += `<div class="hot-badge">🔥 ${num} (${conteo[num]}x)</div>`;
     });
   }
 
   function limpiarHistorial() {
     historial = [];
+    ultimasPredicciones = [];
     actualizarHistorialUI();
-    document.getElementById('pred1').innerText = '-';
-    document.getElementById('pred2').innerText = '-';
-    document.getElementById('pred3').innerText = '-';
-    document.getElementById('reason1').innerText = 'Esperando datos';
-    document.getElementById('reason2').innerText = 'Esperando datos';
-    document.getElementById('reason3').innerText = 'Esperando datos';
+    for(let i = 1; i <= 12; i++) {
+      document.getElementById(`pred${i}`).innerText = '-';
+      document.getElementById(`conf${i}`).innerText = '0%';
+      document.getElementById(`reason${i}`).innerText = 'Esperando...';
+      document.getElementById(`card${i}`).classList.remove('hotspot-boost');
+    }
   }
 
-  // Motor de cálculo de patrones
-  function calcularPredicciones() {
+  // MOTOR IA QUANTUM v8 - ALTA PRECISIÓN Y CONTROL DE OFFSET
+  function ejecutarMotorIA() {
     if (historial.length === 0) return;
 
-    const ultimo = historial[historial.length - 1];
-    let sugerencias = [];
+    let candidatos = {};
 
-    // 1. Patrón de Múltiplos y Mitades (Regla Spinte)
-    if (!isNaN(ultimo) && ultimo !== "0" && ultimo !== "00") {
-      let val = Number(ultimo);
-      if (val * 2 <= 36) sugerencias.push({ num: (val * 2).toString(), motivo: `Doble de ${val}` });
-      if (val * 3 <= 36) sugerencias.push({ num: (val * 3).toString(), motivo: `Triple de ${val}` });
-      if (val % 2 === 0) sugerencias.push({ num: (val / 2).toString(), motivo: `Mitad de ${val}` });
+    function sumarPuntos(num, puntos, motivo) {
+      if (!candidatos[num]) candidatos[num] = { peso: 0, motivos: [] };
+      candidatos[num].peso += puntos;
+      if (!candidatos[num].motivos.includes(motivo)) candidatos[num].motivos.push(motivo);
     }
 
-    // 2. Patrón de Espejo / Inversión de dígitos
-    if (ultimo.length === 2 && ultimo !== "00") {
-      let espejo = ultimo.split('').reverse().join('');
-      if (Number(espejo) <= 36) {
-        sugerencias.push({ num: espejo, motivo: `Espejo de ${ultimo}` });
+    const len = historial.length;
+    const ultimo = historial[len - 1].num;
+    const idxUltimo = ruedaAmericana.indexOf(ultimo);
+
+    // 1. ANÁLISIS DE SALTOS Y DISPERSIÓN DE OFFSET (±1 a ±3)
+    if (len >= 2 && idxUltimo !== -1) {
+      let deltas = [];
+      for (let i = 1; i < len; i++) {
+        let p = ruedaAmericana.indexOf(historial[i-1].num);
+        let c = ruedaAmericana.indexOf(historial[i].num);
+        if (p !== -1 && c !== -1) {
+          let d = Math.abs(c - p);
+          if (d > 19) d = 38 - d;
+          deltas.push(d);
+        }
+      }
+
+      let avgDelta = Math.round(deltas.reduce((a,b) => a+b, 0) / deltas.length);
+      
+      // Cobertura con offset por dispersión lateral
+      for (let offset = -2; offset <= 2; offset++) {
+        let posA = (idxUltimo + avgDelta + offset + ruedaAmericana.length) % ruedaAmericana.length;
+        let posB = (idxUltimo - avgDelta + offset + ruedaAmericana.length) % ruedaAmericana.length;
+        
+        let bonus = 55 - Math.abs(offset) * 12;
+        sumarPuntos(ruedaAmericana[posA], bonus, `Vector Rotor ±${avgDelta}`);
+        sumarPuntos(ruedaAmericana[posB], bonus, `Vector Rotor ±${avgDelta}`);
       }
     }
 
-    // 3. Patrón de Vecinos en la Rueda Física
-    let idx = ruedaAmericana.indexOf(ultimo);
-    if (idx !== -1) {
-      let izq = ruedaAmericana[(idx - 1 + ruedaAmericana.length) % ruedaAmericana.length];
-      let der = ruedaAmericana[(idx + 1) % ruedaAmericana.length];
-      sugerencias.push({ num: izq, motivo: `Vecino plato (${ultimo})` });
-      sugerencias.push({ num: der, motivo: `Vecino plato (${ultimo})` });
-    }
-
-    // Filtrar candidatos repetidos
-    let unicos = [];
-    let mapa = new Set();
-    
-    for (let item of sugerencias) {
-      if (!mapa.has(item.num) && item.num !== ultimo) {
-        mapa.add(item.num);
-        unicos.push(item);
+    // 2. CORREDOR ESPEJO 180° CON BANDA ANCHA
+    if (idxUltimo !== -1) {
+      let idxEspejo = (idxUltimo + 19) % ruedaAmericana.length;
+      for (let off = -3; off <= 3; off++) {
+        let pos = (idxEspejo + off + ruedaAmericana.length) % ruedaAmericana.length;
+        sumarPuntos(ruedaAmericana[pos], 40 - Math.abs(off)*7, "Eje Espejo 180°");
       }
     }
 
-    // Rellenar con números por defecto si no se completan 3 sugerencias
-    const respaldo = [{num: "7", motivo: "Frecuencia base"}, {num: "17", motivo: "Frecuencia base"}, {num: "23", motivo: "Frecuencia base"}];
-    while (unicos.length < 3) {
+    // 3. ATRACCIÓN DE NÚMEROS CEROS (0 y 00)
+    if (["0", "00", "1", "2", "27", "28"].includes(ultimo)) {
+      ["0", "00", "28", "27", "1", "2"].forEach(n => {
+        sumarPuntos(n, 45, "Resonancia Cero/Doble Cero");
+      });
+    }
+
+    // 4. PESO DE MULTIPLICADORES HOTSPOT
+    historial.forEach(item => {
+      if (item.mult !== 'x1') {
+        let mVal = Number(item.mult.replace('x', ''));
+        sumarPuntos(item.num, mVal / 1.8, `Atracción ${item.mult}`);
+      }
+    });
+
+    // 5. PICO GAUSSIANO DE SECTOR DIRECTO
+    if (idxUltimo !== -1) {
+      for (let off = -4; off <= 4; off++) {
+        if (off === 0) continue;
+        let pos = (idxUltimo + off + ruedaAmericana.length) % ruedaAmericana.length;
+        let pwr = (fuenteRuleta === "Física") ? (48 - Math.abs(off) * 8) : (30 - Math.abs(off) * 4);
+        sumarPuntos(ruedaAmericana[pos], pwr, `Sector Gaussiano`);
+      }
+    }
+
+    // 6. CADENAS MARKOV DE REPETICIÓN
+    if (len >= 3) {
+      const prev2 = historial[len - 3].num;
+      const prev1 = historial[len - 2].num;
+      for (let i = 0; i < len - 3; i++) {
+        if (historial[i].num === prev2 && historial[i+1].num === prev1 && historial[i+2].num === ultimo) {
+          sumarPuntos(historial[i+3].num, 65, "Patrón Markov 2º");
+        }
+      }
+    }
+
+    // Evitar repetido inmediato
+    delete candidatos[ultimo];
+
+    // Ordenar los candidatos
+    let listaOrdenada = Object.keys(candidatos).map(key => ({
+      num: key,
+      peso: candidatos[key].peso,
+      motivo: candidatos[key].motivos[0] || "Pico de masa"
+    })).sort((a, b) => b.peso - a.peso);
+
+    const respaldo = ["0", "00", "17", "23", "5", "10", "28", "9", "26", "30", "11", "7", "20", "32"];
+    let elegidos = [];
+    let setElegidos = new Set();
+
+    for (let item of listaOrdenada) {
+      if (!setElegidos.has(item.num)) {
+        setElegidos.add(item.num);
+        elegidos.push(item);
+      }
+      if (elegidos.length === 12) break;
+    }
+
+    while (elegidos.length < 12) {
       let r = respaldo.shift();
-      if (!mapa.has(r.num)) {
-        unicos.push(r);
+      if (!setElegidos.has(r) && r !== ultimo) {
+        setElegidos.add(r);
+        elegidos.push({ num: r, peso: 15, motivo: "Inercia de mesa" });
       }
     }
 
-    // Renderizar las 3 sugerencias principales
-    for (let i = 0; i < 3; i++) {
-      document.getElementById(`pred${i+1}`).innerText = unicos[i].num;
-      document.getElementById(`reason${i+1}`).innerText = unicos[i].motivo;
+    ultimasPredicciones = elegidos.map(e => e.num);
+    let maxPeso = elegidos[0].peso || 1;
+
+    for (let i = 0; i < 12; i++) {
+      let conf = Math.min(Math.round((elegidos[i].peso / maxPeso) * 38) + 58, 98);
+      document.getElementById(`pred${i+1}`).innerText = elegidos[i].num;
+      document.getElementById(`conf${i+1}`).innerText = `${conf}% Conf.`;
+      document.getElementById(`reason${i+1}`).innerText = elegidos[i].motivo;
+
+      const card = document.getElementById(`card${i+1}`);
+      if (elegidos[i].motivo.includes('Vector') || elegidos[i].motivo.includes('Atracción') || elegidos[i].motivo.includes('Markov') || elegidos[i].motivo.includes('Resonancia')) {
+        card.classList.add('hotspot-boost');
+      } else {
+        card.classList.remove('hotspot-boost');
+      }
     }
   }
 
-  // Inicializar al cargar la página
-  initKeypad();
+  initUI();
 </script>
 
 </body>
